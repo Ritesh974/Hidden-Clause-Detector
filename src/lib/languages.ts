@@ -1,0 +1,30 @@
+export const LANGUAGES = [
+  "English",
+  "Hinglish",
+  "हिन्दी (Hindi)",
+  "বাংলা (Bengali)",
+  "தமிழ் (Tamil)",
+  "తెలుగు (Telugu)",
+  "मराठी (Marathi)",
+  "ગુજરાતી (Gujarati)",
+  "ಕನ್ನಡ (Kannada)",
+  "മലയാളം (Malayalam)",
+  "ଓଡ଼ିଆ (Odia)",
+  "অসমীয়া (Assamese)",
+  "बड़ो (Bodo)",
+  "कोंकणी (Konkani)",
+  "Khasi",
+  "ਪੰਜਾਬੀ (Punjabi)",
+  "اردو (Urdu)",
+  "Français",
+  "Español",
+  "Русский",
+  "العربية",
+  "中文 (Mandarin)",
+  "日本語 (Japanese)",
+  "Deutsch",
+  "Tiếng Việt",
+];
+
+export const DISCLAIMER =
+  "This is informational guidance only, not a substitute for professional legal advice.";
