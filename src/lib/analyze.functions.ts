@@ -76,6 +76,7 @@ export type AnalysisResult = {
   documentType: string;
   summary: string;
   riskScore: number;
+  documentText?: string;
   findings: Finding[];
 };
 
@@ -87,9 +88,10 @@ You analyse an uploaded document and identify:
 Explain everything in plain language a non-lawyer understands, and add an optional deeper legal reference where relevant.
 Never claim to give legal advice.
 Return ONLY valid JSON, no markdown fences, matching:
-{"greeting":string,"documentType":string,"summary":string,"riskScore":number(0-100, higher = riskier),"findings":[{"id":string,"category":"risky"|"missing"|"compliant","title":string,"clause":string,"why":string,"severity":"high"|"medium"|"low","suggestion":string,"reference":string}]}
+{"greeting":string,"documentType":string,"summary":string,"riskScore":number(0-100, higher = riskier),"documentText":string,"findings":[{"id":string,"category":"risky"|"missing"|"compliant","title":string,"clause":string,"why":string,"severity":"high"|"medium"|"low","suggestion":string,"reference":string}]}
 Give 6-14 findings covering all three categories when the document supports it. "clause" quotes or paraphrases the actual document text (for missing protections say what is absent).
-Write ALL user-facing text in the requested language.`;
+"documentText" MUST contain a faithful plain-text transcription of the document (read images with OCR), keeping the original wording and paragraph breaks, so risky sentences can be located in it. Keep the exact clause wording inside "clause" identical to the wording used in "documentText" whenever the clause exists in the document.
+Write ALL user-facing text in the requested language, except "documentText" which stays in the document's original language.`;
 
 export const analyzeDocument = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => AnalyzeInput.parse(d))
