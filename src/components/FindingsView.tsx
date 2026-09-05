@@ -112,11 +112,11 @@ export function FindingsView({ session, onChange }: Props) {
     window.setTimeout(() => {
       const el = document.getElementById(`clause-${id}`);
       if (!el) return;
-      docRef.current?.scrollTo({
-        top: Math.max(0, el.offsetTop - (docRef.current.clientHeight - el.offsetHeight) / 2),
-        behavior: "smooth",
-      });
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      const box = docRef.current;
+      if (box) {
+        box.scrollTo({ top: Math.max(0, el.offsetTop - box.clientHeight / 2), behavior: "smooth" });
+        box.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
     }, 80);
   }
 
