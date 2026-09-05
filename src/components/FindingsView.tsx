@@ -391,11 +391,15 @@ function FindingCard({
   language,
   mark,
   onMark,
+  canLocate,
+  onLocate,
 }: {
   finding: Finding;
   language: string;
   mark: Mark;
   onMark: (mark: Mark) => void;
+  canLocate: boolean;
+  onLocate: () => void;
 }) {
   const explain = useServerFn(explainClause);
   const meta = CATEGORY_META[finding.category] ?? CATEGORY_META.risky;
