@@ -69,6 +69,8 @@ export function FindingsView({ session, onChange }: Props) {
   const [letterBusy, setLetterBusy] = useState(false);
   const [tone, setTone] = useState<"polite" | "firm">("polite");
   const [notice, setNotice] = useState("");
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const docRef = useRef<HTMLDivElement>(null);
 
   const result = session.result;
   const findings = result.findings ?? [];
@@ -82,13 +84,42 @@ export function FindingsView({ session, onChange }: Props) {
   const segments = useMemo(
     () =>
       result.documentText
-        ? highlightRiskyText(
+        ? highlightFindings(
             result.documentText,
-            findings.filter((f) => f.category === "risky").map((f) => f.clause),
+            findings.map((f) => ({ id: f.id, clause: f.clause })),
           )
         : [],
     [result.documentText, findings],
   );
+
+  const locatable = useMemo(
+    () => new Set(segments.filter((s) => s.id).map((s) => s.id as string)),
+    [segments],
+  );
+
+  const categoryById = useMemo(
+    () => Object.fromEntries(findings.map((f) => [f.id, f.category])) as Record<
+      string,
+      Finding["category"]
+    >,
+    [findings],
+  );
+
+  function jumpToClause(id: string) {
+    if (!locatable.has(id)) return;
+    setShowDoc(true);
+    setActiveId(id);
+    window.setTimeout(() => {
+      const el = document.getElementById(`clause-${id}`);
+      if (!el) return;
+      docRef.current?.scrollTo({
+        top: Math.max(0, el.offsetTop - (docRef.current.clientHeight - el.offsetHeight) / 2),
+        behavior: "smooth",
+      });
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 80);
+  }
+
 
   async function changeLanguage(language: string) {
     if (language === session.language) return;
