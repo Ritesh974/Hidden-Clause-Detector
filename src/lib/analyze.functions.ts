@@ -203,7 +203,9 @@ Translate greeting, documentType, summary, title, clause, why, suggestion and re
     });
 
     const translated = parseJson<AnalysisResult>(content);
-    translated.documentText = source.documentText;
+    if (source.documentText) {
+      translated.documentText = source.documentText;
+    }
     translated.findings = (translated.findings ?? []).map((f, i) => ({
       ...f,
       id: f.id || source.findings?.[i]?.id || `f-${i}`,
