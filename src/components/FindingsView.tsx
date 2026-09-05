@@ -1,9 +1,10 @@
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
   ChevronDown,
+  Crosshair,
   Download,
   FileDown,
   Highlighter,
@@ -18,7 +19,7 @@ import {
   translateAnalysis,
   type Finding,
 } from "@/lib/analyze.functions";
-import { highlightRiskyText } from "@/lib/highlight";
+import { highlightFindings } from "@/lib/highlight";
 import { LANGUAGES } from "@/lib/languages";
 import { STATUS_LABEL, type Mark, type MarkStatus, type Session } from "@/lib/history";
 import { buildLetterHtml, buildReportHtml, downloadText, printHtml } from "@/lib/report";
