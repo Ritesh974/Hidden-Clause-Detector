@@ -33,7 +33,7 @@ export const Route = createFileRoute("/history")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: HistoryPage;
+  component: HistoryPage,
 });
 
 function counts(session: Session) {
