@@ -435,7 +435,10 @@ function FindingCard({
         onClick={() => {
           const next = !open;
           setOpen(next);
-          if (next) void load(depth);
+          if (next) {
+            void load(depth);
+            if (canLocate) onLocate();
+          }
         }}
         className="flex w-full items-start gap-3 p-4 text-left"
       >
