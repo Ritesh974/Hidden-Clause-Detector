@@ -1,4 +1,4 @@
-export type Segment = { text: string; risky: boolean };
+export type Segment = { text: string; risky: boolean; id?: string };
 
 function escapeRegex(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
