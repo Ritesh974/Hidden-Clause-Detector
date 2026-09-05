@@ -46,3 +46,47 @@ export function highlightRiskyText(documentText: string, clauses: string[]): Seg
   if (cursor < documentText.length) segments.push({ text: documentText.slice(cursor), risky: false });
   return segments;
 }
+
+/**
+ * Same matching as above, but each highlighted segment keeps the id of the
+ * finding it belongs to so the UI can scroll straight to it.
+ */
+export function highlightFindings(
+  documentText: string,
+  items: Array<{ id: string; clause: string }>,
+): Segment[] {
+  const ranges: Array<{ start: number; end: number; id: string }> = [];
+
+  for (const item of items) {
+    const clause = item.clause.replace(/^[“"'\s]+|[”"'\s]+$/g, "").trim();
+    if (clause.length < 12) continue;
+    const words = clause.split(/\s+/).map(escapeRegex);
+    let match = new RegExp(words.join("[\\s\\n]+"), "i").exec(documentText);
+    if (!match) {
+      const short = words.slice(0, Math.max(6, Math.floor(words.length / 2)));
+      if (short.length < 4) continue;
+      match = new RegExp(short.join("[\\s\\n]+"), "i").exec(documentText);
+    }
+    if (match) ranges.push({ start: match.index, end: match.index + match[0].length, id: item.id });
+  }
+
+  if (!ranges.length) return [{ text: documentText, risky: false }];
+
+  ranges.sort((a, b) => a.start - b.start);
+  const merged: typeof ranges = [];
+  for (const range of ranges) {
+    const last = merged[merged.length - 1];
+    if (last && range.start < last.end) last.end = Math.max(last.end, range.end);
+    else merged.push({ ...range });
+  }
+
+  const segments: Segment[] = [];
+  let cursor = 0;
+  for (const { start, end, id } of merged) {
+    if (start > cursor) segments.push({ text: documentText.slice(cursor, start), risky: false });
+    segments.push({ text: documentText.slice(start, end), risky: true, id });
+    cursor = end;
+  }
+  if (cursor < documentText.length) segments.push({ text: documentText.slice(cursor), risky: false });
+  return segments;
+}
