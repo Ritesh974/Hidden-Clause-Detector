@@ -477,10 +477,19 @@ function FindingCard({
 
       {open && (
         <div className="border-t border-border px-4 py-4">
+          {canLocate && (
+            <button
+              onClick={onLocate}
+              className="mb-3 flex items-center gap-2 rounded-full border border-primary px-3 py-1.5 text-xs font-semibold text-primary"
+            >
+              <Crosshair className="size-3.5" /> Show this clause in my document
+            </button>
+          )}
           <p className="text-sm leading-relaxed text-foreground">{finding.why}</p>
           <p className="mt-3 rounded-xl bg-secondary/60 px-3 py-2 text-xs leading-relaxed text-secondary-foreground">
             What you can do: {finding.suggestion}
           </p>
+
 
           <div className="mt-4 flex gap-2">
             {(["simple", "legal"] as const).map((d) => (
