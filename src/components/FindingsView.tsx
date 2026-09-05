@@ -245,6 +245,8 @@ export function FindingsView({ session, onChange }: Props) {
             language={session.language}
             mark={session.marks[f.id] ?? { status: "open", note: "" }}
             onMark={(m) => setMark(f.id, m)}
+            canLocate={locatable.has(f.id)}
+            onLocate={() => jumpToClause(f.id)}
           />
         ))}
       </div>
@@ -262,20 +264,36 @@ export function FindingsView({ session, onChange }: Props) {
             <ChevronDown className={cn("size-4 transition-transform", showDoc && "rotate-180")} />
           </button>
           {showDoc && (
-            <div className="mt-3 max-h-96 overflow-auto rounded-2xl bg-secondary/40 p-3 text-xs leading-relaxed whitespace-pre-wrap">
-              {segments.map((s, i) =>
-                s.risky ? (
-                  <mark key={i} className="rounded bg-risk-soft px-0.5 font-semibold text-risk">
+            <div
+              ref={docRef}
+              className="relative mt-3 max-h-96 overflow-auto rounded-2xl bg-secondary/40 p-3 text-xs leading-relaxed whitespace-pre-wrap"
+            >
+              {segments.map((s, i) => {
+                if (!s.risky) return <span key={i}>{s.text}</span>;
+                const category = s.id ? categoryById[s.id] : "risky";
+                return (
+                  <mark
+                    key={i}
+                    id={s.id ? `clause-${s.id}` : undefined}
+                    className={cn(
+                      "rounded px-0.5 font-semibold transition-all",
+                      category === "compliant"
+                        ? "bg-safe-soft text-safe"
+                        : category === "missing"
+                          ? "bg-warn-soft text-warn-foreground"
+                          : "bg-risk-soft text-risk",
+                      s.id && s.id === activeId && "ring-2 ring-primary ring-offset-1",
+                    )}
+                  >
                     {s.text}
                   </mark>
-                ) : (
-                  <span key={i}>{s.text}</span>
-                ),
-              )}
+                );
+              })}
             </div>
           )}
         </section>
       )}
+
 
       <section className="mt-6 rounded-3xl border border-border bg-card p-5">
         <p className="text-sm font-semibold">Would you like a PDF of all findings?</p>
