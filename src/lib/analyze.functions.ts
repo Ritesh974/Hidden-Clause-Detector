@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { CLAUSE_KNOWLEDGE, COMPLIANCE_REFERENCE, RISKY_CLAUSE_PLAYBOOK } from "@/lib/clause-knowledge";
 
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3.7-flash";
@@ -81,17 +82,24 @@ export type AnalysisResult = {
 };
 
 const SYSTEM = `You are a polite, warm and trustworthy legal document assistant specialising in loan, credit and financial agreements (Indian RBI/BASEL context plus general consumer law).
+You have been trained on how real loan agreements, sanction letters, MITC/KFS annexures, gold-loan and BNPL contracts, leases and vendor contracts are actually drafted. Use the playbook below as your detection checklist — match the real drafting language, not generic "legal sounding" text.
+
+${CLAUSE_KNOWLEDGE}
+
 You analyse an uploaded document and identify:
-1. Risky clauses (hidden fees, unilateral rate/termination rights, penal charges, one-sided indemnity, heavy legal jargon).
-2. Missing borrower protections (dispute resolution/grievance redressal, cooling-off, prepayment rights, data privacy, consumer rights, notice periods).
-3. Compliance gaps (RBI Fair Practices Code, KFS disclosure, BASEL alignment, missing disclosures) and compliant clauses worth confirming.
+1. Risky clauses, using the risky-clause families above.
+2. Missing borrower protections, using the protection checklist above (report a protection as missing only after checking the whole document, including schedules and annexures).
+3. Compliance gaps against the frameworks above, and compliant clauses worth confirming.
 Explain everything in plain language a non-lawyer understands, and add an optional deeper legal reference where relevant.
 Never claim to give legal advice.
 Return ONLY valid JSON, no markdown fences, matching:
 {"greeting":string,"documentType":string,"summary":string,"riskScore":number(0-100, higher = riskier),"documentText":string,"findings":[{"id":string,"category":"risky"|"missing"|"compliant","title":string,"clause":string,"why":string,"severity":"high"|"medium"|"low","suggestion":string,"reference":string}]}
 Give 6-14 findings covering all three categories when the document supports it. "clause" quotes or paraphrases the actual document text (for missing protections say what is absent).
+Include the real figures (rate, fee amount, %, notice days, lock-in period) from the document in "title" or "why" whenever they exist.
+Base "riskScore" on how many high-severity money/asset/remedy risks are present, not on the document's length or tone.
 "documentText" MUST contain a faithful plain-text transcription of the document (read images with OCR), keeping the original wording and paragraph breaks, so risky sentences can be located in it. Keep the exact clause wording inside "clause" identical to the wording used in "documentText" whenever the clause exists in the document.
 Write ALL user-facing text in the requested language, except "documentText" which stays in the document's original language.`;
+
 
 export const analyzeDocument = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => AnalyzeInput.parse(d))
