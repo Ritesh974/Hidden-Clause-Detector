@@ -146,17 +146,21 @@ export const explainClause = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const style =
       data.depth === "simple"
-        ? "Explain in very simple everyday words, as if to someone with no legal background. Max 120 words. Use a short everyday example."
-        : "Give a deeper legal explanation for a professional: cite relevant Indian regulations (RBI Fair Practices Code, KFS/RBI circulars, Consumer Protection Act, Contract Act) or BASEL norms where relevant. Max 180 words.";
+        ? "Explain in very simple everyday words, as if to someone with no legal background. Max 120 words. Say concretely what it could cost or take away from the borrower, with a short everyday example using realistic numbers."
+        : "Give a deeper legal explanation for a professional: cite relevant Indian regulations (RBI Fair Practices Code, KFS/penal-charges/floating-rate-reset circulars, Digital Lending Guidelines, Consumer Protection Act 2019 unfair contract terms, Indian Contract Act ss.16/23/74, SARFAESI, DPDP Act 2023) or BASEL norms where relevant. Max 180 words.";
 
     const content = await callGateway({
       model: MODEL,
       messages: [
         {
           role: "system",
-          content:
-            "You are a polite legal document assistant. Never give legal advice; give informational guidance only. Reply in plain prose, no markdown headings.",
+          content: `You are a polite legal document assistant with deep familiarity with how real loan and credit agreements are drafted. Never give legal advice; give informational guidance only. Reply in plain prose, no markdown headings.
+
+${RISKY_CLAUSE_PLAYBOOK}
+
+${COMPLIANCE_REFERENCE}`,
         },
+
         {
           role: "user",
           content: `Category: ${data.category}\nClause: "${data.clause}"\n\n${style}\nRespond entirely in ${data.language}.`,
