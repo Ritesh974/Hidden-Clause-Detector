@@ -85,8 +85,8 @@ export function buildReportHtml(session: Session) {
     : "";
 
   return shell(
-    `Hidden Clause Detector report — ${session.fileName}`,
-    `<h1>Hidden Clause Detector — Findings report</h1>
+    `HiddenLens report — ${session.fileName}`,
+    `<h1>HiddenLens — Findings report</h1>
 <div class="meta">${escapeHtml(session.fileName)} · ${escapeHtml(result.documentType || "Document")} · ${escapeHtml(
       formatDate(session.createdAt),
     )} · Language: ${escapeHtml(session.language)}</div>

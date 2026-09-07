@@ -12,13 +12,13 @@ import { BottomNav } from "@/components/BottomNav";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hidden Clause Detector — Spot Risky Clauses in Seconds" },
+      { title: "HiddenLens — Spot Risky Legal Clauses in Seconds" },
       {
         name: "description",
         content:
           "Upload a loan agreement or contract and instantly see risky clauses highlighted in red, missing borrower protections and compliance gaps, with PDF reports and negotiation letters.",
       },
-      { property: "og:title", content: "Hidden Clause Detector" },
+      { property: "og:title", content: "HiddenLens" },
       {
         property: "og:description",
         content:
@@ -83,12 +83,15 @@ function Index() {
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
         <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
           <ScanSearch className="size-4" />
-          Hidden Clause Detector
+          Legal document assistant
         </div>
-        <h1 className="mt-3 text-3xl leading-tight font-semibold">
-          Find the clauses hidden in your document
+        <h1 className="font-display mt-4 text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
+          HiddenLens
         </h1>
-        <p className="mt-3 text-sm leading-relaxed opacity-90">
+        <p className="mt-3 text-lg leading-relaxed font-semibold opacity-95">
+          Find the clauses hidden in your document
+        </p>
+        <p className="mt-2 text-sm leading-relaxed opacity-90">
           Hello, and welcome. I&apos;m your friendly document companion. Share a loan agreement or
           contract and I&apos;ll point out risky clauses, missing borrower protections and
           compliance gaps — in simple words.
