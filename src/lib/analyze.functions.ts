@@ -197,6 +197,8 @@ export const translateAnalysis = createServerFn({ method: "POST" })
         why: f.why,
         suggestion: f.suggestion,
         reference: f.reference ?? "",
+        clauseNumber: f.clauseNumber ?? "",
+        pageNumber: f.pageNumber ?? "",
       })),
     };
 
