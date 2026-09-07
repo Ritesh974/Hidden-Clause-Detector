@@ -450,6 +450,20 @@ function FindingCard({
             {meta.label} · {finding.severity}
           </span>
           <span className="mt-2 block text-sm font-semibold text-foreground">{finding.title}</span>
+          {(finding.clauseNumber || finding.pageNumber) && (
+            <span className="mt-1.5 flex flex-wrap gap-1.5">
+              {finding.clauseNumber && (
+                <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">
+                  {finding.clauseNumber}
+                </span>
+              )}
+              {finding.pageNumber && (
+                <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">
+                  {finding.pageNumber}
+                </span>
+              )}
+            </span>
+          )}
           <span className="mt-1 block text-xs leading-relaxed text-muted-foreground italic">
             “{finding.clause}”
           </span>
