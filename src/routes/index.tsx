@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { FileText, Loader2, RefreshCw, ScanSearch, UploadCloud } from "lucide-react";
+import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
@@ -81,11 +81,7 @@ function Index() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
-        <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
-          <ScanSearch className="size-4" />
-          Legal document assistant
-        </div>
-        <h1 className="font-display mt-4 text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
+        <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
           HiddenLens
         </h1>
         <p className="mt-3 text-lg leading-relaxed font-semibold opacity-95">

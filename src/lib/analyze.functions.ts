@@ -70,6 +70,8 @@ export type Finding = {
   severity: "high" | "medium" | "low";
   suggestion: string;
   reference?: string;
+  clauseNumber?: string;
+  pageNumber?: string;
 };
 
 export type AnalysisResult = {
@@ -93,8 +95,9 @@ You analyse an uploaded document and identify:
 Explain everything in plain language a non-lawyer understands, and add an optional deeper legal reference where relevant.
 Never claim to give legal advice.
 Return ONLY valid JSON, no markdown fences, matching:
-{"greeting":string,"documentType":string,"summary":string,"riskScore":number(0-100, higher = riskier),"documentText":string,"findings":[{"id":string,"category":"risky"|"missing"|"compliant","title":string,"clause":string,"why":string,"severity":"high"|"medium"|"low","suggestion":string,"reference":string}]}
+{"greeting":string,"documentType":string,"summary":string,"riskScore":number(0-100, higher = riskier),"documentText":string,"findings":[{"id":string,"category":"risky"|"missing"|"compliant","title":string,"clause":string,"why":string,"severity":"high"|"medium"|"low","suggestion":string,"reference":string,"clauseNumber":string,"pageNumber":string}]}
 Give 6-14 findings covering all three categories when the document supports it. "clause" quotes or paraphrases the actual document text (for missing protections say what is absent).
+"clauseNumber" MUST be the exact clause/section/paragraph number as printed in the document (e.g. "Clause 7.2", "Section 4(b)", "Schedule II, item 3"). "pageNumber" MUST be the page of the document where that clause appears (e.g. "Page 3"). Use "" for both only when the document genuinely has no numbering or the item is a missing protection that appears nowhere; never invent numbers. When transcribing into "documentText", keep the printed clause numbers and insert a line "--- Page N ---" at the start of each page so pages can be located.
 Include the real figures (rate, fee amount, %, notice days, lock-in period) from the document in "title" or "why" whenever they exist.
 Base "riskScore" on how many high-severity money/asset/remedy risks are present, not on the document's length or tone.
 "documentText" MUST contain a faithful plain-text transcription of the document (read images with OCR), keeping the original wording and paragraph breaks, so risky sentences can be located in it. Keep the exact clause wording inside "clause" identical to the wording used in "documentText" whenever the clause exists in the document.
@@ -194,6 +197,8 @@ export const translateAnalysis = createServerFn({ method: "POST" })
         why: f.why,
         suggestion: f.suggestion,
         reference: f.reference ?? "",
+        clauseNumber: f.clauseNumber ?? "",
+        pageNumber: f.pageNumber ?? "",
       })),
     };
 
@@ -203,7 +208,7 @@ export const translateAnalysis = createServerFn({ method: "POST" })
         {
           role: "system",
           content: `You translate a legal-analysis JSON object into another language.
-Return ONLY valid JSON with the exact same shape and the same "id", "category", "severity" and "riskScore" values.
+Return ONLY valid JSON with the exact same shape and the same "id", "category", "severity", "riskScore", "clauseNumber" and "pageNumber" values (keep clause and page references unchanged apart from translating the words "Clause"/"Page").
 Translate greeting, documentType, summary, title, clause, why, suggestion and reference into the requested language, keeping the meaning and the polite tone.`,
         },
         {
