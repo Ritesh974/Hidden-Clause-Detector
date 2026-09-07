@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { FileText, Loader2, RefreshCw, ScanSearch, UploadCloud } from "lucide-react";
+import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
