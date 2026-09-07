@@ -181,3 +181,7 @@
   box-shadow: var(--shadow-soft);
 }
 
+@utility text-shadow-brand {
+  text-shadow: 0 2px 14px oklch(0.2 0.06 180 / 0.35);
+}
+

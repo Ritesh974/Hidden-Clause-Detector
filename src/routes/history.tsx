@@ -18,13 +18,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "History & Comparisons — Hidden Clause Detector" },
+      { title: "History & Comparisons — HiddenLens" },
       {
         name: "description",
         content:
           "Reopen past document reviews, compare two agreements side by side, and download the PDF reports you saved earlier.",
       },
-      { property: "og:title", content: "History & Comparisons — Hidden Clause Detector" },
+      { property: "og:title", content: "History & Comparisons — HiddenLens" },
       {
         property: "og:description",
         content: "Reopen past reviews and compare two agreements side by side at any time.",
@@ -100,9 +100,12 @@ function HistoryPage() {
     <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
         <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
-          <Scale className="size-4" /> Hidden Clause Detector
+          <Scale className="size-4" /> Saved reviews
         </div>
-        <h1 className="mt-3 text-2xl leading-tight font-semibold">Your review history</h1>
+        <h1 className="font-display mt-4 text-4xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
+          HiddenLens
+        </h1>
+        <p className="mt-2 text-lg font-semibold opacity-95">Your review history</p>
         <p className="mt-2 text-sm leading-relaxed opacity-90">
           Every document you reviewed stays here on this device. Pick any two to reopen a
           side-by-side comparison later.
