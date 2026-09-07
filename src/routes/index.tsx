@@ -81,11 +81,7 @@ function Index() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
-        <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
-          <ScanSearch className="size-4" />
-          Legal document assistant
-        </div>
-        <h1 className="font-display mt-4 text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
+        <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
           HiddenLens
         </h1>
         <p className="mt-3 text-lg leading-relaxed font-semibold opacity-95">
