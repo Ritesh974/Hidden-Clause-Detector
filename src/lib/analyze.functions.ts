@@ -208,7 +208,7 @@ export const translateAnalysis = createServerFn({ method: "POST" })
         {
           role: "system",
           content: `You translate a legal-analysis JSON object into another language.
-Return ONLY valid JSON with the exact same shape and the same "id", "category", "severity" and "riskScore" values.
+Return ONLY valid JSON with the exact same shape and the same "id", "category", "severity", "riskScore", "clauseNumber" and "pageNumber" values (keep clause and page references unchanged apart from translating the words "Clause"/"Page").
 Translate greeting, documentType, summary, title, clause, why, suggestion and reference into the requested language, keeping the meaning and the polite tone.`,
         },
         {
