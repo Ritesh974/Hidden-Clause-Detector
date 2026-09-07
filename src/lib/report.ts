@@ -59,6 +59,7 @@ export function buildReportHtml(session: Session) {
             const mark = session.marks[f.id];
             return `<div>
   <h3>${escapeHtml(f.title)} <span class="label" style="color:${CATEGORY_COLOR[g.category]}">· ${escapeHtml(f.severity)}</span></h3>
+  ${f.clauseNumber || f.pageNumber ? `<p class="label">${[f.clauseNumber, f.pageNumber].filter(Boolean).map((v) => escapeHtml(v as string)).join(" · ")}</p>` : ""}
   <div class="quote">${escapeHtml(f.clause)}</div>
   <p><strong>Why it matters:</strong> ${escapeHtml(f.why)}</p>
   <p><strong>What you can do:</strong> ${escapeHtml(f.suggestion)}</p>
