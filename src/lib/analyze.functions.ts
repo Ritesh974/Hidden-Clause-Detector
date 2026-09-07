@@ -70,6 +70,8 @@ export type Finding = {
   severity: "high" | "medium" | "low";
   suggestion: string;
   reference?: string;
+  clauseNumber?: string;
+  pageNumber?: string;
 };
 
 export type AnalysisResult = {
