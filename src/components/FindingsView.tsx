@@ -294,6 +294,7 @@ export function FindingsView({ session, onChange }: Props) {
         </section>
       )}
 
+      <DocChat session={session} onChange={onChange} />
 
       <section className="mt-6 rounded-3xl border border-border bg-card p-5">
         <p className="text-sm font-semibold">Would you like a PDF of all findings?</p>
