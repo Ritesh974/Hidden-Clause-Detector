@@ -230,6 +230,66 @@ Translate greeting, documentType, summary, title, clause, why, suggestion and re
     return translated;
   });
 
+const AskInput = z.object({
+  question: z.string().min(1),
+  language: z.string().default("English"),
+  documentText: z.string().default(""),
+  findings: z
+    .array(
+      z.object({
+        title: z.string(),
+        clause: z.string(),
+        why: z.string(),
+        suggestion: z.string(),
+        category: z.string(),
+        clauseNumber: z.string().default(""),
+        pageNumber: z.string().default(""),
+      }),
+    )
+    .default([]),
+  history: z
+    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() }))
+    .default([]),
+});
+
+export const askDocument = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => AskInput.parse(d))
+  .handler(async ({ data }) => {
+    const findingsText = data.findings
+      .map(
+        (f) =>
+          `- [${f.category}] ${f.title}${f.clauseNumber ? ` (${f.clauseNumber}${f.pageNumber ? `, ${f.pageNumber}` : ""})` : ""}\n  Clause: "${f.clause}"\n  Why it matters: ${f.why}\n  Suggested change: ${f.suggestion}`,
+      )
+      .join("\n");
+
+    const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 120000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
+
+    const content = await callGateway({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content: `You are a warm, polite assistant who answers questions ONLY about the single document provided below.
+
+STRICT RULES:
+1. Answer strictly from the DOCUMENT TEXT and ANALYSIS FINDINGS. Never use outside knowledge, general legal facts, news, or assumptions.
+2. If the answer is not contained in the document, reply politely in one or two sentences that the question is outside the context of the uploaded document and that the document does not cover that topic, and invite them to ask something about the document. Do not answer it anyway.
+3. Greetings, thanks and questions about how to use the findings may be answered warmly and briefly.
+4. Speak like a helpful human: short sentences, simple everyday words, no legal jargon unless you explain it. No markdown headings; a couple of short bullet lines are fine. Keep answers under 140 words.
+5. Quote the clause number and page from the document when helpful.
+6. Never give legal advice; suggest checking with a lawyer for final validation when the topic is serious.
+Respond entirely in ${data.language}.
+
+${context}`,
+        },
+        ...data.history.map((m) => ({ role: m.role, content: m.content })),
+        { role: "user", content: data.question },
+      ],
+    });
+
+    return { answer: content.trim() };
+  });
+
 const LetterInput = z.object({
   documentType: z.string(),
   language: z.string().default("English"),
