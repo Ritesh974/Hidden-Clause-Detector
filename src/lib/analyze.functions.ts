@@ -27,15 +27,17 @@ type Block =
   | { type: "image_url"; image_url: { url: string } }
   | { type: "file"; file: { filename: string; file_data: string } };
 
-async function callGateway(body: unknown) {
+async function callGateway(body: Record<string, unknown>) {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("AI is not configured. Missing API key.");
 
   const res = await fetch(GATEWAY, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Lovable-API-Key": key },
-    body: JSON.stringify(body),
+    // Priority serving tier => lower latency on every call.
+    body: JSON.stringify({ service_tier: "priority", ...body }),
   });
+
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
