@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
+import { Camera, FileText, Loader2, RefreshCw, UploadCloud, X } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
+import { mergePagesToBase64 } from "@/lib/scan";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
 import { saveSession, type Session } from "@/lib/history";
 import { FindingsView } from "@/components/FindingsView";
 import { BottomNav } from "@/components/BottomNav";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,34 +41,26 @@ function Index() {
   const [error, setError] = useState("");
   const [session, setSession] = useState<Session | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const [pages, setPages] = useState<{ file: File; url: string }[]>([]);
 
   useEffect(() => {
     if (session) saveSession(session);
   }, [session]);
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
+  async function runAnalysis(name: string, mimeType: string, payload: { base64: string } | { text: string }) {
     setError("");
     setSession(null);
-    setFileName(file.name);
+    setFileName(name);
     setLoading(true);
     try {
-      const isDocx = /\.docx?$/i.test(file.name);
-      const payload = isDocx
-        ? { text: extractDocxText(await file.arrayBuffer()) }
-        : { base64: await fileToBase64(file) };
       const data = await analyze({
-        data: {
-          fileName: file.name,
-          mimeType: file.type || "application/octet-stream",
-          language,
-          ...payload,
-        },
+        data: { fileName: name, mimeType, language, ...payload },
       });
       setSession({
         id: `s-${Date.now()}`,
         createdAt: Date.now(),
-        fileName: file.name,
+        fileName: name,
         language,
         result: data,
         marks: {},
@@ -77,6 +71,49 @@ function Index() {
       setLoading(false);
     }
   }
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    const isDocx = /\.docx?$/i.test(file.name);
+    const payload = isDocx
+      ? { text: extractDocxText(await file.arrayBuffer()) }
+      : { base64: await fileToBase64(file) };
+    await runAnalysis(file.name, file.type || "application/octet-stream", payload);
+  }
+
+  function addScannedPages(list: FileList | null) {
+    if (!list?.length) return;
+    setError("");
+    setPages((prev) => [
+      ...prev,
+      ...Array.from(list).map((file) => ({ file, url: URL.createObjectURL(file) })),
+    ]);
+  }
+
+  function removePage(index: number) {
+    setPages((prev) => {
+      const target = prev[index];
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((_, i) => i !== index);
+    });
+  }
+
+  async function analyzeScannedPages() {
+    if (!pages.length) return;
+    setLoading(true);
+    try {
+      const base64 = await mergePagesToBase64(pages.map((p) => p.file));
+      pages.forEach((p) => URL.revokeObjectURL(p.url));
+      setPages([]);
+      await runAnalysis(`Scanned document (${pages.length} page${pages.length > 1 ? "s" : ""})`, "image/jpeg", {
+        base64,
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not read the scanned pages. Please try again.");
+      setLoading(false);
+    }
+  }
+
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
