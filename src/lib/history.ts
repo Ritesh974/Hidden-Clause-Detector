@@ -4,6 +4,8 @@ export type MarkStatus = "open" | "negotiating" | "resolved";
 
 export type Mark = { status: MarkStatus; note: string };
 
+export type ChatMessage = { role: "user" | "assistant"; content: string };
+
 export type Session = {
   id: string;
   createdAt: number;
@@ -12,6 +14,7 @@ export type Session = {
   result: AnalysisResult;
   marks: Record<string, Mark>;
   letter?: string;
+  chat?: ChatMessage[];
 };
 
 const KEY = "hcd.sessions.v1";
