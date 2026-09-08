@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
+import { Camera, FileText, Loader2, RefreshCw, UploadCloud, X } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
+import { mergePagesToBase64 } from "@/lib/scan";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
 import { saveSession, type Session } from "@/lib/history";
 import { FindingsView } from "@/components/FindingsView";
 import { BottomNav } from "@/components/BottomNav";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
