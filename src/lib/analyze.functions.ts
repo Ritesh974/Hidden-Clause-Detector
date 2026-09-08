@@ -266,7 +266,7 @@ export const askDocument = createServerFn({ method: "POST" })
       )
       .join("\n");
 
-    const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 120000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
+    const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 40000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
 
     const content = await callGateway({
       model: FAST_MODEL,
