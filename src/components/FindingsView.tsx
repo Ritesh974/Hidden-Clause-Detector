@@ -20,6 +20,7 @@ import {
   type Finding,
 } from "@/lib/analyze.functions";
 import { highlightFindings } from "@/lib/highlight";
+import { DocChat } from "@/components/DocChat";
 import { LANGUAGES } from "@/lib/languages";
 import { STATUS_LABEL, type Mark, type MarkStatus, type Session } from "@/lib/history";
 import { buildLetterHtml, buildReportHtml, downloadText, printHtml } from "@/lib/report";
