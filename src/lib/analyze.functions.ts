@@ -157,7 +157,7 @@ export const explainClause = createServerFn({ method: "POST" })
         : "Give a deeper legal explanation for a professional: cite relevant Indian regulations (RBI Fair Practices Code, KFS/penal-charges/floating-rate-reset circulars, Digital Lending Guidelines, Consumer Protection Act 2019 unfair contract terms, Indian Contract Act ss.16/23/74, SARFAESI, DPDP Act 2023) or BASEL norms where relevant. Max 180 words.";
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -207,7 +207,7 @@ export const translateAnalysis = createServerFn({ method: "POST" })
     };
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -269,7 +269,7 @@ export const askDocument = createServerFn({ method: "POST" })
     const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 120000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -317,7 +317,7 @@ export const draftNegotiationLetter = createServerFn({ method: "POST" })
       .join("\n");
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
