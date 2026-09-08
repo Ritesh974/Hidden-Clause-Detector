@@ -3,7 +3,9 @@ import { z } from "zod";
 import { CLAUSE_KNOWLEDGE, COMPLIANCE_REFERENCE, RISKY_CLAUSE_PLAYBOOK } from "@/lib/clause-knowledge";
 
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL = "google/gemini-3.7-flash";
+const MODEL = "google/gemini-3.8-flash";
+// Lighter, faster model for short interactive replies (chat, explanations, letters).
+const FAST_MODEL = "google/gemini-3.1-flash-lite";
 
 const AnalyzeInput = z.object({
   fileName: z.string(),
