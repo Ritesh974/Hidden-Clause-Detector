@@ -3,7 +3,9 @@ import { z } from "zod";
 import { CLAUSE_KNOWLEDGE, COMPLIANCE_REFERENCE, RISKY_CLAUSE_PLAYBOOK } from "@/lib/clause-knowledge";
 
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL = "google/gemini-3.7-flash";
+const MODEL = "google/gemini-3.8-flash";
+// Lighter, faster model for short interactive replies (chat, explanations, letters).
+const FAST_MODEL = "google/gemini-3.1-flash-lite";
 
 const AnalyzeInput = z.object({
   fileName: z.string(),
@@ -25,15 +27,17 @@ type Block =
   | { type: "image_url"; image_url: { url: string } }
   | { type: "file"; file: { filename: string; file_data: string } };
 
-async function callGateway(body: unknown) {
+async function callGateway(body: Record<string, unknown>) {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("AI is not configured. Missing API key.");
 
   const res = await fetch(GATEWAY, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Lovable-API-Key": key },
-    body: JSON.stringify(body),
+    // Priority serving tier => lower latency on every call.
+    body: JSON.stringify({ service_tier: "priority", ...body }),
   });
+
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
@@ -153,7 +157,7 @@ export const explainClause = createServerFn({ method: "POST" })
         : "Give a deeper legal explanation for a professional: cite relevant Indian regulations (RBI Fair Practices Code, KFS/penal-charges/floating-rate-reset circulars, Digital Lending Guidelines, Consumer Protection Act 2019 unfair contract terms, Indian Contract Act ss.16/23/74, SARFAESI, DPDP Act 2023) or BASEL norms where relevant. Max 180 words.";
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -203,7 +207,7 @@ export const translateAnalysis = createServerFn({ method: "POST" })
     };
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -262,10 +266,10 @@ export const askDocument = createServerFn({ method: "POST" })
       )
       .join("\n");
 
-    const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 120000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
+    const context = `DOCUMENT TEXT:\n${data.documentText.slice(0, 40000) || "(no transcription available)"}\n\nANALYSIS FINDINGS:\n${findingsText || "(none)"}`;
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
@@ -313,7 +317,7 @@ export const draftNegotiationLetter = createServerFn({ method: "POST" })
       .join("\n");
 
     const content = await callGateway({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         {
           role: "system",
