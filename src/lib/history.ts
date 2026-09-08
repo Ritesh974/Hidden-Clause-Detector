@@ -14,6 +14,7 @@ export type Session = {
   result: AnalysisResult;
   marks: Record<string, Mark>;
   letter?: string;
+  chat?: ChatMessage[];
 };
 
 const KEY = "hcd.sessions.v1";
