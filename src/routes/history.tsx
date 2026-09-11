@@ -73,7 +73,7 @@ function HistoryPage() {
 
   if (open) {
     return (
-      <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
+      <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl">
         <header className="bg-hero px-5 pt-8 pb-8 text-primary-foreground">
           <button
             onClick={() => setOpen(null)}
@@ -97,7 +97,7 @@ function HistoryPage() {
     .filter((s): s is Session => Boolean(s));
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
+    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl">
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
         <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
           <Scale className="size-4" /> Saved reviews
@@ -229,7 +229,7 @@ function CompareSheet({ a, b, onClose }: { a: Session; b: Session; onClose: () =
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-background/98 backdrop-blur">
-      <div className="mx-auto w-full max-w-md px-5 py-8">
+      <div className="mx-auto w-full max-w-md px-5 py-8 sm:max-w-2xl">
         <button onClick={onClose} className="flex items-center gap-2 text-xs text-muted-foreground">
           <ArrowLeft className="size-4" /> Close comparison
         </button>
