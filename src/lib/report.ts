@@ -106,23 +106,60 @@ export function buildLetterHtml(session: Session) {
   );
 }
 
-/** Open a printable window so the user can save it as a PDF. */
+/**
+ * Prepare a printable page so the user can save it as a PDF.
+ * Uses a hidden iframe, which works reliably in Safari on Mac, iPhone and iPad
+ * (where pop-up windows are often blocked, especially in installed app mode).
+ */
 export function printHtml(html: string) {
-  const win = window.open("", "_blank", "width=900,height=1000");
-  if (!win) {
-    alert("Please allow pop-ups so the PDF can be prepared.");
-    return;
-  }
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
+  const frame = document.createElement("iframe");
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;";
+  document.body.appendChild(frame);
+
+  const cleanup = () => {
+    window.setTimeout(() => frame.remove(), 1000);
+  };
+
+  frame.onload = () => {
+    const win = frame.contentWindow;
+    if (!win) {
+      cleanup();
+      openInNewTab(html);
+      return;
+    }
+    win.focus();
+    try {
+      win.print();
+    } catch {
+      openInNewTab(html);
+    }
+    cleanup();
+  };
+
+  frame.srcdoc = html;
+}
+
+function openInNewTab(html: string) {
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+  const win = window.open(url, "_blank");
+  if (!win) alert("Please allow pop-ups so the report can be prepared.");
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 export function downloadText(fileName: string, text: string, mime = "text/plain;charset=utf-8") {
-  const url = URL.createObjectURL(new Blob([text], { type: mime }));
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = fileName;
+  a.rel = "noopener";
+  a.target = "_blank";
+  // Safari (Mac and iOS) needs the link in the document before it will act on the click.
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 4000);
 }
