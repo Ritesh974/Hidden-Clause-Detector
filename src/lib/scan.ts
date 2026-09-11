@@ -37,3 +37,32 @@ function loadImage(file: File): Promise<HTMLImageElement> {
     img.src = URL.createObjectURL(file);
   });
 }
+
+const HEIC = /\.(heic|heif)$/i;
+
+/**
+ * iPhone/iPad/Mac photos are often HEIC. Convert them to JPEG in the browser so
+ * every device sends a format the reader understands.
+ */
+export async function normalizeImageFile(file: File): Promise<File> {
+  const isHeic = HEIC.test(file.name) || /heic|heif/i.test(file.type);
+  if (!isHeic) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.min(2000, bitmap.width);
+    canvas.height = Math.round((bitmap.height / bitmap.width) * canvas.width);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("no canvas");
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.9),
+    );
+    if (!blob) throw new Error("no blob");
+    return new File([blob], file.name.replace(HEIC, ".jpg"), { type: "image/jpeg" });
+  } catch {
+    throw new Error(
+      "This iPhone photo (HEIC) couldn't be read here. Please share it as JPEG — on iPhone: Settings › Camera › Formats › Most Compatible, or open the photo and choose Share › Options › JPEG.",
+    );
+  }
+}
