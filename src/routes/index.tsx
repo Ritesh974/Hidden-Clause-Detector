@@ -116,7 +116,7 @@ function Index() {
 
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28">
+    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl sm:shadow-soft">
       <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
         <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
           HiddenLens
@@ -174,6 +174,62 @@ function Index() {
               PDF, Word, JPG, PNG or a photo of the pages. Scanned images are read with OCR.
             </span>
           </button>
+
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              addScannedPages(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => cameraRef.current?.click()}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
+          >
+            <Camera className="size-4" />
+            {pages.length ? "Scan another page" : "Scan with camera"}
+          </button>
+
+          {pages.length > 0 && (
+            <div className="mt-3">
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {pages.map((p, i) => (
+                  <div key={p.url} className="relative shrink-0">
+                    <img
+                      src={p.url}
+                      alt={`Scanned page ${i + 1}`}
+                      loading="lazy"
+                      className="h-24 w-16 rounded-lg border border-border object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePage(i)}
+                      aria-label={`Remove page ${i + 1}`}
+                      className="absolute -top-1.5 -right-1.5 rounded-full bg-risk p-0.5 text-risk-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => void analyzeScannedPages()}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-primary bg-secondary px-4 py-3 text-sm font-semibold text-primary disabled:opacity-70"
+              >
+                {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                Review {pages.length} scanned page{pages.length > 1 ? "s" : ""}
+              </button>
+            </div>
+          )}
 
           {fileName && !loading && (
             <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">

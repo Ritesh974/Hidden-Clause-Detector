@@ -9,7 +9,7 @@ const ITEMS = [
 
 export function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-md border-t border-border bg-card/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-md border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:max-w-2xl sm:rounded-t-2xl sm:border-x">
       {ITEMS.map(({ to, label, icon: Icon }) => (
         <Link
           key={to}
