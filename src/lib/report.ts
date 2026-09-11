@@ -39,7 +39,6 @@ function shell(title: string, body: string) {
   pre { white-space: pre-wrap; font-family: inherit; font-size: 11.5pt; }
 </style></head><body>${body}
 <div class="disclaimer">This is informational guidance only, not a substitute for professional legal advice.</div>
-<script>window.onload = () => { window.focus(); window.print(); };</script>
 </body></html>`;
 }
 
