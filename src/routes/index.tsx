@@ -167,7 +167,7 @@ function Index() {
           <input
             ref={inputRef}
             type="file"
-            accept=".pdf,.doc,.docx,image/*"
+            accept=".pdf,.doc,.docx,.heic,.heif,application/pdf,image/*"
             className="hidden"
             onChange={(e) => handleFile(e.target.files?.[0])}
           />
@@ -186,14 +186,14 @@ function Index() {
               {loading ? "Reading your document…" : "Upload your document"}
             </span>
             <span className="text-xs text-muted-foreground">
-              PDF, Word, JPG, PNG or a photo of the pages. Scanned images are read with OCR.
+              PDF, Word, JPG, PNG or iPhone HEIC photos. Scanned images are read with OCR.
             </span>
           </button>
 
           <input
             ref={cameraRef}
             type="file"
-            accept="image/*"
+            accept="image/*,.heic,.heif"
             capture="environment"
             multiple
             className="hidden"
@@ -205,7 +205,7 @@ function Index() {
           <button
             type="button"
             disabled={loading}
-            onClick={() => cameraRef.current?.click()}
+            onClick={() => (hasCamera ? setCameraOpen(true) : cameraRef.current?.click())}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
           >
             <Camera className="size-4" />
