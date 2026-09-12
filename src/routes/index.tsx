@@ -1,12 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Camera, FileText, Loader2, RefreshCw, UploadCloud, X } from "lucide-react";
+import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
-import { mergePagesToBase64, normalizeImageFile } from "@/lib/scan";
-import { supportsCameraStream } from "@/lib/platform";
-import { CameraCapture } from "@/components/CameraCapture";
+import { normalizeImageFile } from "@/lib/scan";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
 import { saveSession, type Session } from "@/lib/history";
 import { FindingsView } from "@/components/FindingsView";
