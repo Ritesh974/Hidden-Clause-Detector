@@ -45,6 +45,12 @@ function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const [pages, setPages] = useState<{ file: File; url: string }[]>([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [hasCamera, setHasCamera] = useState(false);
+
+  useEffect(() => {
+    setHasCamera(supportsCameraStream());
+  }, []);
 
   useEffect(() => {
     if (session) saveSession(session);
@@ -74,13 +80,20 @@ function Index() {
     }
   }
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
-    const isDocx = /\.docx?$/i.test(file.name);
-    const payload = isDocx
-      ? { text: extractDocxText(await file.arrayBuffer()) }
-      : { base64: await fileToBase64(file) };
-    await runAnalysis(file.name, file.type || "application/octet-stream", payload);
+  async function handleFile(input: File | undefined) {
+    if (!input) return;
+    try {
+      setError("");
+      const isDocx = /\.docx?$/i.test(input.name);
+      const file = isDocx ? input : await normalizeImageFile(input);
+      const payload = isDocx
+        ? { text: extractDocxText(await file.arrayBuffer()) }
+        : { base64: await fileToBase64(file) };
+      await runAnalysis(file.name, file.type || "application/octet-stream", payload);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not read this file. Please try another one.");
+      setLoading(false);
+    }
   }
 
   function addScannedPages(list: FileList | null) {
@@ -104,7 +117,8 @@ function Index() {
     if (!pages.length) return;
     setLoading(true);
     try {
-      const base64 = await mergePagesToBase64(pages.map((p) => p.file));
+      const files = await Promise.all(pages.map((p) => normalizeImageFile(p.file)));
+      const base64 = await mergePagesToBase64(files);
       pages.forEach((p) => URL.revokeObjectURL(p.url));
       setPages([]);
       await runAnalysis(`Scanned document (${pages.length} page${pages.length > 1 ? "s" : ""})`, "image/jpeg", {
@@ -118,8 +132,8 @@ function Index() {
 
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl sm:shadow-soft">
-      <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
+    <main className="mx-auto min-h-[100dvh] w-full max-w-md bg-background pb-28 sm:max-w-2xl sm:shadow-soft">
+      <header className="bg-hero px-5 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-8 text-primary-foreground">
         <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
           HiddenLens
         </h1>
@@ -154,7 +168,7 @@ function Index() {
           <input
             ref={inputRef}
             type="file"
-            accept=".pdf,.doc,.docx,image/*"
+            accept=".pdf,.doc,.docx,.heic,.heif,application/pdf,image/*"
             className="hidden"
             onChange={(e) => handleFile(e.target.files?.[0])}
           />
@@ -173,14 +187,14 @@ function Index() {
               {loading ? "Reading your document…" : "Upload your document"}
             </span>
             <span className="text-xs text-muted-foreground">
-              PDF, Word, JPG, PNG or a photo of the pages. Scanned images are read with OCR.
+              PDF, Word, JPG, PNG or iPhone HEIC photos. Scanned images are read with OCR.
             </span>
           </button>
 
           <input
             ref={cameraRef}
             type="file"
-            accept="image/*"
+            accept="image/*,.heic,.heif"
             capture="environment"
             multiple
             className="hidden"
@@ -192,7 +206,7 @@ function Index() {
           <button
             type="button"
             disabled={loading}
-            onClick={() => cameraRef.current?.click()}
+            onClick={() => (hasCamera ? setCameraOpen(true) : cameraRef.current?.click())}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-70"
           >
             <Camera className="size-4" />
@@ -270,6 +284,18 @@ function Index() {
       </footer>
 
       <BottomNav />
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onCapture={(files) =>
+            setPages((prev) => [
+              ...prev,
+              ...files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+            ])
+          }
+        />
+      )}
     </main>
   );
 }

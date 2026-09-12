@@ -73,8 +73,8 @@ function HistoryPage() {
 
   if (open) {
     return (
-      <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl">
-        <header className="bg-hero px-5 pt-8 pb-8 text-primary-foreground">
+      <main className="mx-auto min-h-[100dvh] w-full max-w-md bg-background pb-28 sm:max-w-2xl">
+        <header className="bg-hero px-5 pt-[calc(2rem+env(safe-area-inset-top))] pb-8 text-primary-foreground">
           <button
             onClick={() => setOpen(null)}
             className="flex items-center gap-2 text-xs font-medium opacity-85"
@@ -97,8 +97,8 @@ function HistoryPage() {
     .filter((s): s is Session => Boolean(s));
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl">
-      <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
+    <main className="mx-auto min-h-[100dvh] w-full max-w-md bg-background pb-28 sm:max-w-2xl">
+      <header className="bg-hero px-5 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-8 text-primary-foreground">
         <div className="flex items-center gap-2 text-xs font-medium tracking-[0.18em] uppercase opacity-80">
           <Scale className="size-4" /> Saved reviews
         </div>
