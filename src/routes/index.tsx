@@ -117,7 +117,8 @@ function Index() {
     if (!pages.length) return;
     setLoading(true);
     try {
-      const base64 = await mergePagesToBase64(pages.map((p) => p.file));
+      const files = await Promise.all(pages.map((p) => normalizeImageFile(p.file)));
+      const base64 = await mergePagesToBase64(files);
       pages.forEach((p) => URL.revokeObjectURL(p.url));
       setPages([]);
       await runAnalysis(`Scanned document (${pages.length} page${pages.length > 1 ? "s" : ""})`, "image/jpeg", {
@@ -283,6 +284,18 @@ function Index() {
       </footer>
 
       <BottomNav />
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onCapture={(files) =>
+            setPages((prev) => [
+              ...prev,
+              ...files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+            ])
+          }
+        />
+      )}
     </main>
   );
 }
