@@ -45,6 +45,12 @@ function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const [pages, setPages] = useState<{ file: File; url: string }[]>([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [hasCamera, setHasCamera] = useState(false);
+
+  useEffect(() => {
+    setHasCamera(supportsCameraStream());
+  }, []);
 
   useEffect(() => {
     if (session) saveSession(session);
@@ -74,13 +80,20 @@ function Index() {
     }
   }
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
-    const isDocx = /\.docx?$/i.test(file.name);
-    const payload = isDocx
-      ? { text: extractDocxText(await file.arrayBuffer()) }
-      : { base64: await fileToBase64(file) };
-    await runAnalysis(file.name, file.type || "application/octet-stream", payload);
+  async function handleFile(input: File | undefined) {
+    if (!input) return;
+    try {
+      setError("");
+      const isDocx = /\.docx?$/i.test(input.name);
+      const file = isDocx ? input : await normalizeImageFile(input);
+      const payload = isDocx
+        ? { text: extractDocxText(await file.arrayBuffer()) }
+        : { base64: await fileToBase64(file) };
+      await runAnalysis(file.name, file.type || "application/octet-stream", payload);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not read this file. Please try another one.");
+      setLoading(false);
+    }
   }
 
   function addScannedPages(list: FileList | null) {
