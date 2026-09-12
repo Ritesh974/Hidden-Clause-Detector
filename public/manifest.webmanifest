@@ -1,6 +1,6 @@
 {
   "id": "/",
-  "name": "HiddenLens — Legal Clause Finder",
+  "name": "HiddenLens \u2014 Legal Clause Finder",
   "short_name": "HiddenLens",
   "description": "Spot risky clauses, missing borrower protections and compliance gaps in your documents.",
   "start_url": "/",
@@ -10,8 +10,27 @@
   "background_color": "#0f3b38",
   "theme_color": "#0f3b38",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
   ]
 }
