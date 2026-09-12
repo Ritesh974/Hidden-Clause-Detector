@@ -132,8 +132,8 @@ function Index() {
 
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-md bg-background pb-28 sm:max-w-2xl sm:shadow-soft">
-      <header className="bg-hero px-5 pt-10 pb-8 text-primary-foreground">
+    <main className="mx-auto min-h-[100dvh] w-full max-w-md bg-background pb-28 sm:max-w-2xl sm:shadow-soft">
+      <header className="bg-hero px-5 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-8 text-primary-foreground">
         <h1 className="font-display text-5xl leading-[1.05] font-bold tracking-tight text-shadow-brand">
           HiddenLens
         </h1>
