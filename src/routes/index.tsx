@@ -86,39 +86,6 @@ function Index() {
     }
   }
 
-  function addScannedPages(list: FileList | null) {
-    if (!list?.length) return;
-    setError("");
-    setPages((prev) => [
-      ...prev,
-      ...Array.from(list).map((file) => ({ file, url: URL.createObjectURL(file) })),
-    ]);
-  }
-
-  function removePage(index: number) {
-    setPages((prev) => {
-      const target = prev[index];
-      if (target) URL.revokeObjectURL(target.url);
-      return prev.filter((_, i) => i !== index);
-    });
-  }
-
-  async function analyzeScannedPages() {
-    if (!pages.length) return;
-    setLoading(true);
-    try {
-      const files = await Promise.all(pages.map((p) => normalizeImageFile(p.file)));
-      const base64 = await mergePagesToBase64(files);
-      pages.forEach((p) => URL.revokeObjectURL(p.url));
-      setPages([]);
-      await runAnalysis(`Scanned document (${pages.length} page${pages.length > 1 ? "s" : ""})`, "image/jpeg", {
-        base64,
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not read the scanned pages. Please try again.");
-      setLoading(false);
-    }
-  }
 
 
   return (
