@@ -41,14 +41,6 @@ function Index() {
   const [error, setError] = useState("");
   const [session, setSession] = useState<Session | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
-  const [pages, setPages] = useState<{ file: File; url: string }[]>([]);
-  const [cameraOpen, setCameraOpen] = useState(false);
-  const [hasCamera, setHasCamera] = useState(false);
-
-  useEffect(() => {
-    setHasCamera(supportsCameraStream());
-  }, []);
 
   useEffect(() => {
     if (session) saveSession(session);
