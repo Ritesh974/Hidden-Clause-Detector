@@ -1,12 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Camera, FileText, Loader2, RefreshCw, UploadCloud, X } from "lucide-react";
+import { FileText, Loader2, RefreshCw, UploadCloud } from "lucide-react";
 import { analyzeDocument } from "@/lib/analyze.functions";
 import { extractDocxText, fileToBase64 } from "@/lib/docx";
-import { mergePagesToBase64, normalizeImageFile } from "@/lib/scan";
-import { supportsCameraStream } from "@/lib/platform";
-import { CameraCapture } from "@/components/CameraCapture";
+import { normalizeImageFile } from "@/lib/scan";
 import { DISCLAIMER, LANGUAGES } from "@/lib/languages";
 import { saveSession, type Session } from "@/lib/history";
 import { FindingsView } from "@/components/FindingsView";
@@ -43,14 +41,6 @@ function Index() {
   const [error, setError] = useState("");
   const [session, setSession] = useState<Session | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
-  const [pages, setPages] = useState<{ file: File; url: string }[]>([]);
-  const [cameraOpen, setCameraOpen] = useState(false);
-  const [hasCamera, setHasCamera] = useState(false);
-
-  useEffect(() => {
-    setHasCamera(supportsCameraStream());
-  }, []);
 
   useEffect(() => {
     if (session) saveSession(session);
@@ -96,39 +86,6 @@ function Index() {
     }
   }
 
-  function addScannedPages(list: FileList | null) {
-    if (!list?.length) return;
-    setError("");
-    setPages((prev) => [
-      ...prev,
-      ...Array.from(list).map((file) => ({ file, url: URL.createObjectURL(file) })),
-    ]);
-  }
-
-  function removePage(index: number) {
-    setPages((prev) => {
-      const target = prev[index];
-      if (target) URL.revokeObjectURL(target.url);
-      return prev.filter((_, i) => i !== index);
-    });
-  }
-
-  async function analyzeScannedPages() {
-    if (!pages.length) return;
-    setLoading(true);
-    try {
-      const files = await Promise.all(pages.map((p) => normalizeImageFile(p.file)));
-      const base64 = await mergePagesToBase64(files);
-      pages.forEach((p) => URL.revokeObjectURL(p.url));
-      setPages([]);
-      await runAnalysis(`Scanned document (${pages.length} page${pages.length > 1 ? "s" : ""})`, "image/jpeg", {
-        base64,
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not read the scanned pages. Please try again.");
-      setLoading(false);
-    }
-  }
 
 
   return (
